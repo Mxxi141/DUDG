@@ -82,7 +82,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,.back:focus-visibl
 .icon-btn:hover{color:var(--ink);border-color:var(--muted)}
 .icon-btn:disabled{opacity:.3;cursor:default}
 .add{align-self:flex-start}
-.fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .field{display:flex;flex-direction:column;gap:6px;min-width:0}
 .field label{font-family:var(--f-label);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:.85rem;color:var(--muted)}
 .field input,.field select{font:inherit;color:var(--ink);background:var(--stage);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0}
@@ -176,6 +176,27 @@ kbd{font-family:var(--f-label);border:1px solid var(--line);border-bottom-width:
 .binfo .k{font-family:var(--f-label);font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:.8rem}
 .binfo.sb .k{color:#8fb3ff}.binfo.bb .k{color:var(--gold)}
 .binfo .v{font-size:1.15rem;font-weight:600;overflow-wrap:anywhere}
+.level-box{background:#0d0f12;border-radius:14px;box-shadow:0 0 0 2px var(--gold-deep) inset;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.lv-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.lv-badge{font-family:var(--f-display);font-size:1.5rem;color:var(--gold);line-height:1}
+.lv-badge small{font-size:.9rem;color:var(--muted);margin-left:2px}
+.lv-vals{display:flex;flex-direction:column;line-height:1.1}
+.lv-vals b{font-family:var(--f-display);font-weight:400;font-size:1.35rem;font-variant-numeric:tabular-nums}
+.lv-vals small{font-family:var(--f-label);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:.72rem;color:var(--muted)}
+.lv-next{font-size:.9rem;color:var(--muted)}
+.notice{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border-radius:16px;padding:14px 18px;background:var(--gold);color:#14171c;animation:noticeIn .5s cubic-bezier(.2,.8,.2,1)}
+.notice b{font-family:var(--f-display);font-weight:400;font-size:clamp(1.4rem,2.4vw,2rem);text-transform:uppercase;display:block;line-height:1.1}
+.notice span{font-size:clamp(1rem,1.3vw,1.25rem);font-weight:500}
+.notice .btn-ghost{color:#14171c;border-color:rgba(0,0,0,.35)}
+.notice.pause{background:var(--chip-blue);color:#fff}.notice.pause .btn-ghost{color:#fff;border-color:rgba(255,255,255,.5)}
+.notice.final{background:var(--chip-red);color:#fff}.notice.final .btn-ghost{color:#fff;border-color:rgba(255,255,255,.5)}
+@keyframes noticeIn{0%{transform:translateY(-10px) scale(.97);opacity:0}100%{transform:none;opacity:1}}
+.lvl-preview{border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.lvl-preview summary{cursor:pointer;font-family:var(--f-label);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:.9rem;color:var(--muted)}
+.lvl-table{width:100%;border-collapse:collapse;margin-top:10px;font-variant-numeric:tabular-nums}
+.lvl-table th{font-family:var(--f-label);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.8rem;color:var(--muted);text-align:left;padding:4px 6px;border-bottom:1px solid var(--line)}
+.lvl-table td{padding:5px 6px;border-bottom:1px solid var(--line)}
+.lvl-preview .hint{margin:8px 0 0;font-size:.88rem}
 .blind-ctrl{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .blind-ctrl .hint{font-size:.88rem}
 .roster-box{background:var(--stage-2);border:1px solid var(--line);border-radius:14px;padding:10px 14px}
@@ -224,6 +245,7 @@ body.in-game .status{font-size:clamp(1.05rem,1.2vw,1.4rem)}
 .seat .name.empty{background:transparent;border-style:dashed;color:#6f8679;font-weight:600}
 .seat .name .no{color:var(--gold);margin-right:6px;font-family:var(--f-display);font-weight:400}
 .seat.fresh .name{animation:pop .7s cubic-bezier(.2,.8,.2,1) both}
+.seat.lit .name{background:var(--gold);color:#14171c;border-color:var(--gold);box-shadow:0 0 18px rgba(242,199,92,.7)}
 @keyframes pop{0%{transform:scale(1.5);background:var(--gold);color:#14171c}100%{transform:none}}
 .draw-msg{font-family:var(--f-label);font-weight:600;font-size:clamp(1.2rem,2.4vw,1.6rem);letter-spacing:.03em;min-height:1.4em;text-align:center}
 .draw-msg b{color:var(--gold)}
@@ -285,18 +307,24 @@ body.in-game .status{font-size:clamp(1.05rem,1.2vw,1.4rem)}
           <select id="sbStart"></select>
         </div>
         <div class="field">
-          <label for="sbVal">Small Blind</label>
-          <input id="sbVal" type="number" min="0" step="1" inputmode="numeric" placeholder="z. B. 5">
-        </div>
-        <div class="field">
-          <label for="bbVal">Big Blind</label>
-          <input id="bbVal" type="number" min="0" step="1" inputmode="numeric" placeholder="z. B. 10">
+          <label for="qSet">Fragen</label>
+          <select id="qSet"><option value="test">Testrunde 1 (10 Fragen)</option><option value="test2">Testrunde 2 (10 Fragen)</option><option value="test3">Testrunde 3 (10 Fragen)</option><option value="abend">Spieleabend (12 Fragen)</option></select>
         </div>
       </div>
 
+      <details class="lvl-preview">
+        <summary>Blindstruktur: steigt alle 3 Runden</summary>
+        <table class="lvl-table">
+          <thead><tr><th>Stufe</th><th>Runden</th><th>SB / BB</th><th>Ante</th></tr></thead>
+          <tbody id="lvlBody"></tbody>
+        </table>
+        <p class="hint">Pause nach Runde 12 (Rebuy-Ende, 1er tauschen). Nach Runde 24 Finale: alle All-in.</p>
+      </details>
+
       <div class="setup-foot">
         <button type="submit" class="btn-main" id="startBtn">Spiel starten</button>
-        <span class="hint" id="setupHint">Mindestens 2 Spieler. Blind-Höhen sind optional.</span>
+        <button type="button" class="btn-ghost" id="resetBtn" hidden>Neues Spiel</button>
+        <span class="hint" id="setupHint">Mindestens 2 Spieler. Startstack 280.</span>
       </div>
     </form>
   </section>
@@ -306,17 +334,22 @@ body.in-game .status{font-size:clamp(1.05rem,1.2vw,1.4rem)}
     <div class="stage">
       <nav class="picker" id="picker" aria-label="Frage wählen"></nav>
 
+      <div class="notice" id="notice" hidden role="status">
+        <div><b id="noticeTitle"></b><span id="noticeText"></span></div>
+        <button class="btn-ghost" id="noticeClose">OK</button>
+      </div>
+
       <section class="rules" id="rules" hidden>
         <h2>So läuft eine Runde</h2>
         <ol>
-          <li>Small und Big Blind zahlen ihren Pflichteinsatz in den Pot.</li>
+          <li>Ab Stufe 4 zahlt jeder das Ante, dann zahlen Small und Big Blind ihren Pflichteinsatz in den Pot.</li>
           <li>Frage vorlesen. Jeder schreibt verdeckt eine Zahl auf seine Karte.</li>
           <li><strong>Setzrunde 1</strong> nach Poker-Prinzip: mitgehen, erhöhen oder aussteigen.</li>
           <li><strong>Hinweis 1</strong> aufdecken, dann <strong>Setzrunde 2</strong>.</li>
           <li><strong>Hinweis 2</strong> aufdecken, dann <strong>Setzrunde 3</strong>.</li>
           <li>Alle Karten, die noch im Spiel sind, werden gezeigt. <strong>Auflösung</strong>: Wer am nächsten dran ist, gewinnt den Pot.</li>
         </ol>
-        <p>Gleich nah dran? Pot teilen. Steigen alle bis auf einen aus, gewinnt der ohne Auflösung. Nach jeder Frage wandern die Blinds einen Platz weiter.</p>
+        <p>Gleich nah dran? Pot teilen. Steigen alle bis auf einen aus, gewinnt der ohne Auflösung. Nach jeder Frage wandern die Blinds einen Platz weiter, alle 3 Runden steigen sie. Pause nach Runde 12, Finale nach Runde 24.</p>
       </section>
 
       <div class="q-meta"><span id="qNum">Frage 1 von 12</span><span class="cat" id="qCat"></span></div>
@@ -355,6 +388,7 @@ body.in-game .status{font-size:clamp(1.05rem,1.2vw,1.4rem)}
       <div class="table" id="table">
         <div class="tbl"><div class="tbl-shadow"></div><div class="tbl-edge"></div><div class="tbl-rail"><div class="felt"><div class="t1" id="tableT1">All <span>In</span></div><div class="t2" id="tableRound">Runde 1</div></div></div></div>
       </div>
+      <div class="level-box" id="levelBox" aria-live="polite"></div>
       <div class="blind-info">
         <div class="binfo sb"><div class="k">Small Blind</div><div class="v" id="sbName"></div></div>
         <div class="binfo bb"><div class="k">Big Blind</div><div class="v" id="bbName"></div></div>
@@ -399,7 +433,7 @@ body.in-game .status{font-size:clamp(1.05rem,1.2vw,1.4rem)}
 </div>
 
 <script>
-const QUESTIONS = [
+const SET_ABEND = [
   {cat:"Geschichte", q:"Wie viele Jahre dauerte der Hundertjährige Krieg zwischen England und Frankreich?", unit:"Jahre",
    h1:"Er begann im Jahr 1337.",
    h2:"Jeanne d’Arc wurde 1431 hingerichtet. Danach ging der Krieg noch über 20 Jahre weiter.",
@@ -450,12 +484,150 @@ const QUESTIONS = [
    a:"1.233 km", n:"Jahrzehntelang stand in Lexika 1.320 km. Der Fehler war vermutlich ein Zahlendreher und fiel erst 2010 auf."}
 ];
 
+const SET_TEST = [
+  {cat:"Bayern", q:"In welchem Jahr wurde das Oktoberfest zum ersten Mal gefeiert?", unit:"Jahreszahl",
+   h1:"Anlass war eine königliche Hochzeit.",
+   h2:"Es war zwischen 1800 und 1820.",
+   a:"1810", n:"Gefeiert wurde die Hochzeit von Kronprinz Ludwig und Prinzessin Therese, daher der Name Theresienwiese."},
+  {cat:"Promis", q:"Wie alt wurde Queen Elizabeth II.?", unit:"Jahre",
+   h1:"Sie starb im Jahr 2022.",
+   h2:"Sie war über 70 Jahre lang Königin.",
+   a:"96 Jahre", n:"Geboren 1926, gestorben 2022. Länger hat kein britischer Monarch regiert."},
+  {cat:"Bücher", q:"In welchem Jahr erschien der erste Harry-Potter-Band im englischen Original?", unit:"Jahreszahl",
+   h1:"Es war in den 1990er-Jahren.",
+   h2:"Im selben Jahr starb Prinzessin Diana.",
+   a:"1997", n:"„Harry Potter and the Philosopher’s Stone“. Auf Deutsch kam er ein Jahr später."},
+  {cat:"Bauwerke", q:"Wie lang ist die Golden Gate Bridge in San Francisco insgesamt?", unit:"Meter",
+   h1:"Allein zwischen den beiden Türmen sind es 1.280 m.",
+   h2:"Insgesamt sind es weniger als 3 km.",
+   a:"2.737 m", n:"Eröffnet 1937. Damals war sie die Hängebrücke mit der größten Spannweite der Welt."},
+  {cat:"Fußball", q:"Wie viele Bundesliga-Tore hat Gerd Müller geschossen?", unit:"Tore",
+   h1:"Er spielte in der Bundesliga nur für den FC Bayern.",
+   h2:"Robert Lewandowski kam auf 312 und blieb damit unter Müllers Rekord.",
+   a:"365 Tore", n:"In 427 Spielen. Bis heute Bundesliga-Rekord."},
+  {cat:"Geografie", q:"Wie tief ist der Bodensee an seiner tiefsten Stelle?", unit:"Meter",
+   h1:"Es sind mehr als 200 m.",
+   h2:"Es sind weniger als 300 m.",
+   a:"251 m", n:"Die tiefste Stelle liegt zwischen Fischbach und Uttwil."},
+  {cat:"Marken", q:"In welchem Jahr wurde Coca-Cola erfunden?", unit:"Jahreszahl",
+   h1:"Erfunden wurde sie als Medizin, in einer Apotheke in Atlanta.",
+   h2:"Im selben Jahr meldete Carl Benz sein Automobil zum Patent an.",
+   a:"1886", n:"Erfinder war der Apotheker John Pemberton."},
+  {cat:"Geografie", q:"Wie hoch ist der Mount Everest?", unit:"Meter über dem Meer",
+   h1:"Er ist weniger als 9.000 m hoch.",
+   h2:"Er ist höher als 8.800 m.",
+   a:"8.849 m", n:"Gemessen 2020 von China und Nepal gemeinsam. Früher galten 8.848 m."},
+  {cat:"Geschichte", q:"In welchem Jahr wurde die Berliner Mauer gebaut?", unit:"Jahreszahl",
+   h1:"Wenige Wochen vorher sagte Walter Ulbricht: „Niemand hat die Absicht, eine Mauer zu errichten.“",
+   h2:"Die Mauer stand 28 Jahre lang.",
+   a:"1961", n:"Baubeginn war der 13. August 1961."},
+  {cat:"Musik", q:"Wie alt wurde Elvis Presley?", unit:"Jahre",
+   h1:"Er starb im Jahr 1977.",
+   h2:"Er wurde keine 45 Jahre alt.",
+   a:"42 Jahre", n:"Geboren 1935 in Tupelo, gestorben in Graceland."}
+];
+const SET_TEST2 = [
+  {cat:"Fußball", q:"In welchem Jahr fand die erste Fußball-Weltmeisterschaft statt?", unit:"Jahreszahl",
+   h1:"Gastgeber und erster Weltmeister war dasselbe Land in Südamerika.",
+   h2:"Es war zwischen 1925 und 1935.",
+   a:"1930", n:"In Uruguay. Uruguay gewann das Finale gegen Argentinien."},
+  {cat:"Promis", q:"Wie alt wurde Albert Einstein?", unit:"Jahre",
+   h1:"Er starb im Jahr 1955.",
+   h2:"Er wurde älter als 70.",
+   a:"76 Jahre", n:"Geboren 1879 in Ulm, gestorben 1955 in Princeton."},
+  {cat:"Weltraum", q:"Wie viele Menschen haben bisher den Mond betreten?", unit:"Menschen",
+   h1:"Alle waren Amerikaner.",
+   h2:"Es sind weniger als 15.",
+   a:"12 Menschen", n:"Zwischen 1969 und 1972, bei sechs Apollo-Missionen. Der letzte war Gene Cernan."},
+  {cat:"Bauwerke", q:"Wie hoch ist der Turm des Ulmer Münsters?", unit:"Meter",
+   h1:"Es ist der höchste Kirchturm der Welt.",
+   h2:"Der Kölner Dom (157 m) ist niedriger.",
+   a:"161,5 m", n:"Fertiggestellt wurde der Turm erst 1890, mehr als 500 Jahre nach der Grundsteinlegung."},
+  {cat:"Fußball", q:"In welchem Jahr wurde der FC Bayern München gegründet?", unit:"Jahreszahl",
+   h1:"Es war rund um die Jahrhundertwende.",
+   h2:"Borussia Dortmund wurde 1909 gegründet, der FC Bayern ist älter.",
+   a:"1900", n:"Am 27. Februar 1900 in einem Münchner Café."},
+  {cat:"Bauwerke", q:"Wie lang ist der Eurotunnel zwischen England und Frankreich?", unit:"Kilometer",
+   h1:"Knapp 38 km davon verlaufen unter dem Meer.",
+   h2:"Insgesamt sind es mehr als 45 km.",
+   a:"rund 50 km", n:"Genau 50,45 km. Eröffnet 1994."},
+  {cat:"Bayern", q:"In welchem Jahr wurde die Allianz Arena eröffnet?", unit:"Jahreszahl",
+   h1:"Sie wurde vor der Heim-WM in Deutschland fertig.",
+   h2:"Es war zwischen 2003 und 2007.",
+   a:"2005", n:"Eröffnet im Mai 2005. Bei der WM 2006 fand hier das Eröffnungsspiel statt."},
+  {cat:"Musik", q:"Wie alt wurde Michael Jackson?", unit:"Jahre",
+   h1:"Er starb im Jahr 2009.",
+   h2:"Er wurde älter als 45.",
+   a:"50 Jahre", n:"Geboren 1958. Er starb kurz vor seiner geplanten Konzertreihe in London."},
+  {cat:"Bauwerke", q:"Wie hoch ist die Freiheitsstatue in New York samt Sockel?", unit:"Meter",
+   h1:"Die Statue allein, bis zur Fackel, misst 46 m.",
+   h2:"Mit Sockel sind es weniger als 100 m.",
+   a:"93 m", n:"Ein Geschenk Frankreichs an die USA, eingeweiht 1886."},
+  {cat:"Marken", q:"In welchem Jahr wurde Google gegründet?", unit:"Jahreszahl",
+   h1:"Es war in den 1990er-Jahren.",
+   h2:"Im selben Jahr wurde Frankreich im eigenen Land Fußball-Weltmeister.",
+   a:"1998", n:"Gegründet von Larry Page und Sergey Brin, zuerst in einer Garage."}
+];
+const SET_TEST3 = [
+  {cat:"Fernsehen", q:"In welchem Jahr lief die allererste Tatort-Folge im Fernsehen?", unit:"Jahreszahl",
+   h1:"Die erste Folge hieß „Taxi nach Leipzig“.",
+   h2:"Es war zwischen 1965 und 1975.",
+   a:"1970", n:"Ausgestrahlt am 29. November 1970. Der Tatort ist damit die langlebigste Krimireihe im deutschen Fernsehen."},
+  {cat:"Promis", q:"Wie alt wurde Pablo Picasso?", unit:"Jahre",
+   h1:"Er starb im Jahr 1973.",
+   h2:"Er wurde älter als 85.",
+   a:"91 Jahre", n:"Geboren 1881 in Málaga, gestorben 1973 in Frankreich."},
+  {cat:"Bauwerke", q:"Wie lang ist der Panamakanal?", unit:"Kilometer",
+   h1:"Er verbindet den Atlantik mit dem Pazifik.",
+   h2:"Er ist kürzer als 100 km.",
+   a:"rund 82 km", n:"Eröffnet 1914. Ein Schiff braucht für die Durchfahrt etwa 8 bis 10 Stunden."},
+  {cat:"Kino", q:"In welchem Jahr kam der erste James-Bond-Film ins Kino?", unit:"Jahreszahl",
+   h1:"Bond wurde von Sean Connery gespielt.",
+   h2:"Im selben Jahr hielt die Kubakrise die Welt in Atem.",
+   a:"1962", n:"„James Bond jagt Dr. No“."},
+  {cat:"Bayern", q:"Wie hoch ist der Olympiaturm in München?", unit:"Meter",
+   h1:"Er wurde 1968 eröffnet, vier Jahre vor den Olympischen Spielen.",
+   h2:"Er ist niedriger als 300 m.",
+   a:"291 m", n:"Mit Antenne 291 m. Die Aussichtsplattform liegt auf rund 190 m."},
+  {cat:"Musik", q:"Wie alt wurde Johann Sebastian Bach?", unit:"Jahre",
+   h1:"Er starb im Jahr 1750.",
+   h2:"Er wurde älter als 60.",
+   a:"65 Jahre", n:"Geboren 1685 in Eisenach, gestorben 1750 in Leipzig."},
+  {cat:"Geschichte", q:"In welchem Jahr wurde die D-Mark eingeführt?", unit:"Jahreszahl",
+   h1:"Es war kurz nach dem Zweiten Weltkrieg.",
+   h2:"Es war ein Jahr vor der Gründung der Bundesrepublik.",
+   a:"1948", n:"Mit der Währungsreform am 20. Juni 1948 in den Westzonen."},
+  {cat:"Fußball", q:"Wie viele Tore schoss Deutschland bei der WM 2014 insgesamt?", unit:"Tore",
+   h1:"Allein im Halbfinale gegen Brasilien waren es sieben.",
+   h2:"Im ersten Spiel gegen Portugal waren es vier.",
+   a:"18 Tore", n:"4 gegen Portugal, 2 gegen Ghana, 1 gegen die USA, 2 gegen Algerien, 1 gegen Frankreich, 7 gegen Brasilien und 1 im Finale gegen Argentinien."},
+  {cat:"Bayern", q:"Wie tief ist der Königssee an seiner tiefsten Stelle?", unit:"Meter",
+   h1:"Er ist der tiefste See Bayerns.",
+   h2:"Der Starnberger See ist 128 m tief, der Königssee deutlich tiefer.",
+   a:"190 m", n:"Er liegt im Nationalpark Berchtesgaden, bekannt ist er für sein Echo an der Echowand."},
+  {cat:"Marken", q:"In welchem Jahr kam der erste VW Golf auf den Markt?", unit:"Jahreszahl",
+   h1:"Er löste den Käfer als Bestseller von VW ab.",
+   h2:"Es war zwischen 1970 und 1978.",
+   a:"1974", n:"Der Golf wurde zum meistverkauften Auto Deutschlands."}
+];
+const SETS = {
+  test:{ name:"Testrunde 1 (10 Fragen)", q:SET_TEST },
+  test2:{ name:"Testrunde 2 (10 Fragen)", q:SET_TEST2 },
+  test3:{ name:"Testrunde 3 (10 Fragen)", q:SET_TEST3 },
+  abend:{ name:"Spieleabend (12 Fragen)", q:SET_ABEND }
+};
+const LEVELS = [
+  {sb:1,bb:2,ante:0},{sb:2,bb:4,ante:0},{sb:5,bb:10,ante:0},{sb:10,bb:20,ante:1},
+  {sb:15,bb:30,ante:5},{sb:25,bb:50,ante:5},{sb:50,bb:100,ante:10},{sb:100,bb:200,ante:25}
+];
+const PER_LEVEL = 3, PAUSE_AFTER = 12, FINAL_AFTER = 24;
+let QUESTIONS = SET_TEST, TOTAL = SET_TEST.length;
+
 const $ = id => document.getElementById(id);
-const TOTAL = QUESTIONS.length;
 const MIN_P = 2, MAX_P = 12;
 const LABELS = ["Hinweis 1 aufdecken","Hinweis 2 aufdecken","Auflösung zeigen","Nächste Frage"];
 const STATUS = [
-  ["Blinds & Setzrunde 1","Blinds zahlen ein, alle schreiben ihre Zahl verdeckt auf. Dann wird gesetzt."],
+  ["Blinds & Setzrunde 1",""],
   ["Setzrunde 2","Hinweis 1 ist offen. Neu setzen, erhöhen oder aussteigen."],
   ["Setzrunde 3","Hinweis 2 ist offen. Letzte Chance zu setzen."],
   ["Showdown","Karten zeigen. Wer am nächsten dran ist, gewinnt den Pot."]
@@ -463,13 +635,16 @@ const STATUS = [
 const TRACK_NOW = [[0,1],[2,3],[4,5],[6]];
 
 /* ---------- Zustand ---------- */
-let S = { players:["Simon","Evi","Maxi"], sbStart:0, sbVal:"", bbVal:"", rot:0, sbPos:null, out:[], idx:0, done:[], started:false };
+let S = { players:["Simon","Evi","Maxi"], sbStart:0, rot:0, round:0, set:"test", sbPos:null, out:[], idx:0, done:[], started:false };
 let phase = 0;
 try{
   const saved = JSON.parse(localStorage.getItem("allin-84405")||"null");
   if(saved && Array.isArray(saved.players)) S = Object.assign(S, saved);
 }catch(e){}
-if(!(S.idx>=0 && S.idx<TOTAL)) S.idx = 0;
+if(!SETS[S.set]) S.set="test";
+if(!(S.round>=0)) S.round=0;
+function applySet(){ QUESTIONS=SETS[S.set].q; TOTAL=QUESTIONS.length; if(!(S.idx>=0 && S.idx<TOTAL)) S.idx=0; }
+applySet();
 if(!Array.isArray(S.out)) S.out=[];
 if(S.sbPos==null){ const n=S.players.length||1; S.sbPos=((S.sbStart+S.rot)%n+n)%n; }
 function save(){ try{ localStorage.setItem("allin-84405", JSON.stringify(S)); }catch(e){} }
@@ -493,7 +668,7 @@ function renderSetup(focusIdx){
   });
   $("addBtn").disabled = draft.length>=MAX_P;
   refreshSb();
-  $("sbVal").value = S.sbVal; $("bbVal").value = S.bbVal;
+  $("qSet").value = S.set;
   if(focusIdx!=null){ const f=$("p-"+focusIdx); f && f.focus(); }
 }
 function iconBtn(label, path, fn){
@@ -515,16 +690,25 @@ $("setupForm").addEventListener("submit",e=>{
   const names = draft.map((n,i)=>n.trim()||("Spieler "+(i+1)));
   const filled = draft.filter(n=>n.trim()).length;
   if(filled<MIN_P){ $("setupHint").textContent="Bitte mindestens zwei Namen eintragen."; $("setupHint").classList.add("err"); return; }
-  $("setupHint").classList.remove("err"); $("setupHint").textContent="Mindestens 2 Spieler. Blind-Höhen sind optional.";
-  const changed = JSON.stringify(names)!==JSON.stringify(S.players);
+  $("setupHint").classList.remove("err"); $("setupHint").textContent="Mindestens 2 Spieler. Startstack 280.";
+  const changed = JSON.stringify(names)!==JSON.stringify(S.players) || $("qSet").value!==S.set;
   S.players = names;
   S.sbStart = +$("sbStart").value || 0;
-  S.sbVal = $("sbVal").value; S.bbVal = $("bbVal").value;
-  if(changed || !S.started){ S.rot = 0; S.out = []; }
+  S.set = $("qSet").value; applySet();
+  if(changed || !S.started) resetGame();
   S.sbPos = S.sbStart; if(S.out.includes(S.sbPos)) S.sbPos = nextActive(S.sbPos-1);
   S.started = true; save();
   showGame();
 });
+
+function resetGame(){ S.rot=0; S.round=0; S.out=[]; S.done=[]; S.idx=0; S.sbPos=S.sbStart; $("notice").hidden=true; }
+$("resetBtn").onclick=()=>{
+  S.sbStart = +$("sbStart").value || 0; S.set=$("qSet").value; applySet(); resetGame(); S.started=false; save();
+  $("startBtn").textContent="Spiel starten"; $("resetBtn").hidden=true;
+  $("setupHint").classList.remove("err"); $("setupHint").textContent="Alles zurückgesetzt: Runde 1, alle wieder im Spiel.";
+};
+(function(){ const tb=$("lvlBody"); LEVELS.forEach((L,i)=>{ const tr=document.createElement("tr");
+  tr.innerHTML=`<td>${i+1}</td><td>${i*PER_LEVEL+1}–${(i+1)*PER_LEVEL}</td><td>${fmt(L.sb)} / ${fmt(L.bb)}</td><td>${L.ante?fmt(L.ante):"–"}</td>`; tb.appendChild(tr); }); })();
 
 /* ---------- Glücksrad ---------- */
 const WHEEL_COLORS = [["#c8342a","#fff"],["#14171c","#fff"],["#1f7a4d","#fff"],["#2f6fd0","#fff"],["#c49a3f","#14171c"]];
@@ -542,11 +726,18 @@ function openDraw(){
 }
 function closeDraw(){ $("drawOverlay").hidden=true; D=null; $("drawBtn").focus(); }
 
-function wheelNames(){ return D.mode==="sb" ? D.seated : D.pool; }
+function wheelNames(){ return D.pool; }
 function paintWheel(){
   const c=$("wheel"), ctx=c.getContext("2d"), W=c.width, r=W/2;
   const names=wheelNames(), m=names.length, a=2*Math.PI/m;
   ctx.clearRect(0,0,W,W);
+  if(m===0){
+    ctx.beginPath(); ctx.arc(r,r,r,0,2*Math.PI); ctx.fillStyle="#12211a"; ctx.fill();
+    ctx.fillStyle="#8fa498"; ctx.textAlign="center"; ctx.textBaseline="middle";
+    ctx.font='700 34px "Barlow Condensed", "Arial Narrow", sans-serif';
+    ctx.fillText("ALLE SITZEN", r, r*0.42);
+    return;
+  }
   names.forEach((n,i)=>{
     const start=-Math.PI/2 + i*a, end=start+a;
     let col = WHEEL_COLORS[i%WHEEL_COLORS.length];
@@ -564,15 +755,15 @@ function paintWheel(){
   });
 }
 function resetWheelRotation(){ const c=$("wheel"); c.style.transition="none"; D.rot=0; c.style.transform="rotate(0deg)"; }
-function drawUpdate(msg, freshIdx){
-  paintWheel();
+function drawUpdate(msg, freshIdx, keepWheel, litIdx){
+  if(!keepWheel) paintWheel();
   const t=$("drawTable"); t.querySelectorAll(".seat").forEach(s=>s.remove());
   for(let i=0;i<D.total;i++){
     const who=D.seated[i];
     const ang = Math.PI/2 + i*2*Math.PI/D.total;
     const [x,y] = seatPos(ang);
     const seat=document.createElement("div");
-    seat.className="seat"+(i===freshIdx?" fresh":"");
+    seat.className="seat"+(i===freshIdx?" fresh":"")+(i===litIdx?" lit":"");
     seat.style.left=x+"%"; seat.style.top=y+"%";
     const nm=document.createElement("div"); nm.className="name"+(who?"":" empty");
     const no=document.createElement("span"); no.className="no"; no.textContent=i+1;
@@ -586,14 +777,31 @@ function drawUpdate(msg, freshIdx){
   }
   $("drawTableLbl").textContent = D.seated.length<D.total ? `${D.seated.length} von ${D.total} sitzen` : "Alle am Tisch";
   if(msg!=null) $("drawMsg").innerHTML=msg;
-  $("spinLbl").textContent = D.mode==="sb" ? "SB" : "Drehen";
-  $("spinBtn").setAttribute("aria-label", D.mode==="sb" ? "Small Blind auslosen" : "Rad drehen");
+  $("spinLbl").textContent = D.mode==="seats" ? "Drehen" : "SB";
+  $("spinBtn").setAttribute("aria-label", D.mode==="seats" ? "Rad drehen" : "Small Blind auslosen");
   $("spinBtn").disabled = D.spinning || D.mode==="done";
   $("drawApply").disabled = D.spinning || D.seated.length<D.total;
   $("drawRestart").disabled = D.spinning;
 }
+function spinSb(){
+  D.spinning=true; drawUpdate("Wer startet mit dem Small Blind?", null, true);
+  const n=D.total, target=Math.floor(Math.random()*n);
+  const steps = (reduceMotion ? 0 : n*3) + ((target - 0 + n) % n);
+  let k=0;
+  const tick=()=>{
+    if(!D) return;
+    const cur=k%n;
+    drawUpdate(null, null, true, cur);
+    if(k>=steps){ D.spinning=false; landed(cur); return; }
+    k++;
+    const left=steps-k, delay = reduceMotion ? 60 : (left<6 ? 120+ (6-left)*70 : 70);
+    setTimeout(tick, delay);
+  };
+  tick();
+}
 function spin(){
   if(!D || D.spinning || D.mode==="done") return;
+  if(D.mode==="sb") return spinSb();
   const names=wheelNames(), m=names.length, a=360/m;
   const pick=Math.floor(Math.random()*m);
   const theta = pick*a + a/2 + (Math.random()-0.5)*a*0.6;
@@ -617,16 +825,14 @@ function landed(pick){
       D.seated.push(D.pool[0]); msg+=` Bleibt nur noch Platz ${D.total} für <b>${esc(D.pool[0])}</b>.`; D.pool=[];
     }
     if(D.pool.length===0){
-      D.mode="sb"; msg+=" Alle sitzen. Noch einmal drehen: Wer startet mit dem Small Blind?";
-      setTimeout(()=>{ if(D){ resetWheelRotation(); drawUpdate(); } }, 900);
-    } else {
-      setTimeout(()=>{ if(D){ resetWheelRotation(); drawUpdate(); } }, 900);
+      D.mode="sb"; msg+=" Alle sitzen. Jetzt den Chip drücken: Wer startet mit dem Small Blind?";
     }
-    drawUpdate(msg, D.seated.length-1);
+    setTimeout(()=>{ if(D && !D.spinning){ resetWheelRotation(); drawUpdate(); } }, 1100);
+    drawUpdate(msg, D.seated.length-1, true);
     $("drawApply").disabled = D.seated.length<D.total;
   } else if(D.mode==="sb"){
     D.sb=pick; D.mode="done";
-    drawUpdate(`<b>${esc(D.seated[pick])}</b> startet mit dem Small Blind. Übernehmen und los geht’s!`, pick);
+    drawUpdate(`<b>${esc(D.seated[pick])}</b> startet mit dem Small Blind. Übernehmen und los geht’s!`, pick, true);
     $("drawApply").focus();
   }
 }
@@ -654,6 +860,7 @@ function showSetup(){
   document.body.classList.remove("in-game");
   $("setupView").hidden=false; $("gameView").hidden=true; $("gameTools").hidden=true;
   $("startBtn").textContent = S.started ? "Weiterspielen" : "Spiel starten";
+  $("resetBtn").hidden = !S.started;
   renderSetup();
   window.scrollTo(0,0);
 }
@@ -664,6 +871,37 @@ function showGame(){
   window.scrollTo(0,0);
 }
 $("playersBtn").onclick=showSetup;
+
+/* ---------- Blindstufen ---------- */
+function levelIdx(r){ r = r==null ? S.round : r; return Math.min(Math.floor(r/PER_LEVEL), LEVELS.length-1); }
+function lvl(r){ return LEVELS[levelIdx(r)]; }
+function fmt(n){ return n.toLocaleString("de-DE"); }
+function renderLevel(){
+  const L=lvl(), li=levelIdx(), r=S.round+1;
+  let next;
+  if(S.round>=FINAL_AFTER) next="Finale: alle All-in, eine letzte Schätzfrage.";
+  else if(li<LEVELS.length-1) next=`Nächste Stufe ab Runde ${(li+1)*PER_LEVEL+1}: ${fmt(LEVELS[li+1].sb)} / ${fmt(LEVELS[li+1].bb)}`+(LEVELS[li+1].ante?`, Ante ${LEVELS[li+1].ante}`:"");
+  else next=`Letzte Stufe. Nach Runde ${FINAL_AFTER} kommt das Finale.`;
+  if(S.round<PAUSE_AFTER && r>PAUSE_AFTER-PER_LEVEL) next += ` · Pause nach Runde ${PAUSE_AFTER}`;
+  $("levelBox").innerHTML = `<div class="lv-top"><span class="lv-badge">Stufe ${li+1}<small>/${LEVELS.length}</small></span>
+    <span class="lv-vals"><b>${fmt(L.sb)} / ${fmt(L.bb)}</b><small>Small / Big Blind</small></span>
+    <span class="lv-vals"><b>${L.ante?fmt(L.ante):"–"}</b><small>Ante</small></span></div>
+    <div class="lv-next">${next}</div>`;
+}
+function showNotice(kind, title, text){
+  const n=$("notice"); n.className="notice "+kind; n.hidden=false;
+  $("noticeTitle").textContent=title; $("noticeText").textContent=text;
+}
+$("noticeClose").onclick=()=>{ $("notice").hidden=true; };
+function announce(){
+  const r=S.round;   // abgeschlossene Runden
+  const L=lvl(r);
+  const lvTxt=`Stufe ${levelIdx(r)+1}: Small Blind ${fmt(L.sb)}, Big Blind ${fmt(L.bb)}`+(L.ante?`, Ante ${fmt(L.ante)} von jedem`:"")+".";
+  if(r===FINAL_AFTER) showNotice("final","Finale!","Alle, die noch Chips haben, gehen All-in. Eine letzte Frage entscheidet.");
+  else if(r===PAUSE_AFTER) showNotice("pause","Pause!",`Rebuys sind jetzt vorbei. 1er gegen größere Chips tauschen. Danach geht es weiter mit ${lvTxt}`);
+  else if(r>0 && r%PER_LEVEL===0 && r<FINAL_AFTER) showNotice("up","Die Blinds steigen!",lvTxt);
+  else $("notice").hidden=true;
+}
 
 /* ---------- Tisch ---------- */
 function isIn(i){ return !S.out.includes(i); }
@@ -688,20 +926,21 @@ function renderTable(animate){
     if(i===sb||i===bb){
       const b=document.createElement("div"); const isSb=i===sb;
       b.className="blind "+(isSb?"sb":"bb");
-      const v = isSb ? S.sbVal : S.bbVal;
-      b.innerHTML = '<span>'+(isSb?"SB":"BB")+(v!==""?'<small>'+esc(v)+'</small>':'')+'</span>';
-      b.setAttribute("aria-label",(isSb?"Small Blind":"Big Blind")+(v!==""?" "+v:""));
+      const v = fmt(isSb ? lvl().sb : lvl().bb);
+      b.innerHTML = '<span>'+(isSb?"SB":"BB")+'<small>'+v+'</small></span>';
+      b.setAttribute("aria-label",(isSb?"Small Blind ":"Big Blind ")+v);
       if(y<46.5) seat.append(nameEl(name), b); else seat.append(b, nameEl(name));
     } else seat.append(nameEl(name));
     t.appendChild(seat);
   });
-  const sv = S.sbVal!=="" ? " ("+S.sbVal+")" : "", bv = S.bbVal!=="" ? " ("+S.bbVal+")" : "";
+  const sv = " ("+fmt(lvl().sb)+")", bv = " ("+fmt(lvl().bb)+")";
   $("sbName").textContent = sb>=0 ? S.players[sb]+sv : "–";
   $("bbName").textContent = bb>=0 ? S.players[bb]+bv : "–";
   if(n===1){ $("tableT1").innerHTML="Sieger"; $("tableRound").textContent=S.players[act[0]]; $("table").classList.add("won"); }
-  else { $("tableT1").innerHTML="All <span>In</span>"; $("tableRound").textContent="Runde "+(S.rot+1); $("table").classList.remove("won"); }
+  else { $("tableT1").innerHTML="All <span>In</span>"; $("tableRound").textContent="Runde "+(S.round+1)+" · Stufe "+(levelIdx()+1); $("table").classList.remove("won"); }
   $("blindPrev").disabled = $("blindNext").disabled = n<2;
   renderRoster();
+  renderLevel();
 }
 function renderRoster(){
   const ul=$("roster"); ul.innerHTML="";
@@ -751,8 +990,9 @@ function buildPicker(){
 }
 function goTo(i){
   const rotate = phase===3 && i!==S.idx;   // eine Aufgabe ist abgeschlossen → Blinds wandern
-  if(rotate) moveBlinds(1);
+  if(rotate){ S.round++; moveBlinds(1); }
   load(i, rotate);
+  if(rotate) announce();
 }
 function load(i, animate){
   S.idx=i; phase=0;
@@ -770,7 +1010,8 @@ function render(){
   ["s1","s2","s3"].forEach((s,k)=>$(s).classList.toggle("open", phase>k));
   const now=TRACK_NOW[phase];
   [...$("track").children].forEach((li,k)=>{ li.classList.toggle("now", now.includes(k)); li.classList.toggle("past", k<now[0]); });
-  const [t,d]=STATUS[phase];
+  let [t,d]=STATUS[phase];
+  if(phase===0){ const L=lvl(); d=(L.ante?`Ante ${fmt(L.ante)} von jedem, `:"")+`Blinds ${fmt(L.sb)} / ${fmt(L.bb)} einzahlen. Alle schreiben ihre Zahl verdeckt auf, dann wird gesetzt.`; }
   $("status").innerHTML=`<b>${t}</b>${d}`;
   const btn=$("mainBtn");
   btn.textContent = phase===3 && S.idx===TOTAL-1 ? "Zurück zu Frage 1" : LABELS[phase];
