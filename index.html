@@ -105,6 +105,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,.back:focus-visibl
 .rules h2{font-family:var(--f-label);text-transform:uppercase;letter-spacing:.08em;font-size:1rem;margin:0 0 10px;color:var(--gold)}
 .rules ol{margin:0;padding-left:1.2em;display:grid;gap:6px;max-width:75ch}
 .rules p{margin:12px 0 0;color:var(--muted);max-width:75ch}
+.rules ul{margin:0;padding-left:1.2em;display:grid;gap:6px;max-width:75ch}
+.rules h2.rules-sub{margin-top:18px}
 
 .stage{display:flex;flex-direction:column;gap:24px;min-width:0}
 .q-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-family:var(--f-label);text-transform:uppercase;letter-spacing:.1em;font-weight:600;color:var(--muted)}
@@ -370,6 +372,16 @@ body.in-game .status{font-size:clamp(1.05rem,1.2vw,1.4rem)}
           <li>Alle Karten, die noch im Spiel sind, werden gezeigt. <strong>Auflösung</strong>: Wer am nächsten dran ist, gewinnt den Pot.</li>
         </ol>
         <p>Gleich nah dran? Pot teilen. Steigen alle bis auf einen aus, gewinnt der ohne Auflösung. Nach jeder Frage wandern die Blinds einen Platz weiter, alle 3 Runden steigen sie. Pause nach Runde 12, Finale nach Runde 24.</p>
+
+        <h2 class="rules-sub">Geisterliga</h2>
+        <ul>
+          <li>Wer keine Chips mehr hat, ist in der <strong>Geisterliga</strong>. Sie startet erst ab <strong>2 Geistern</strong>, bis dahin wartet der erste.</li>
+          <li>Die Geister schätzen bei jeder Frage verdeckt mit, gleichzeitig mit allen anderen. Die Zahl steht fest.</li>
+          <li>Die Antwort wird immer aufgelöst. Der Geist, der am nächsten dran ist, bekommt <strong>1 Punkt</strong>. Bei Gleichstand bekommen beide einen.</li>
+          <li>Mit <strong>3 Punkten</strong> geht es zurück an den Tisch mit <strong>400 Chips</strong> aus der Bank. Die Punkte verfallen.</li>
+          <li><strong>Ab Frage 22 gibt es keinen Wiedereinstieg mehr.</strong></li>
+          <li>Bleibt nur ein Geist übrig, pausiert die Geisterliga, seine Punkte bleiben. Wer nach einem Comeback wieder rausfliegt, startet bei 0 Punkten.</li>
+        </ul>
       </section>
 
       <div class="q-meta"><span id="qNum">Frage 1 von 12</span><span class="cat" id="qCat"></span></div>
