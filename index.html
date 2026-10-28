@@ -186,6 +186,11 @@ kbd{font-family:var(--f-label);border:1px solid var(--line);border-bottom-width:
 .lv-vals b{font-family:var(--f-display);font-weight:400;font-size:1.35rem;font-variant-numeric:tabular-nums}
 .lv-vals small{font-family:var(--f-label);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:.72rem;color:var(--muted)}
 .lv-next{font-size:.9rem;color:var(--muted)}
+.lv-next b{color:var(--ink);font-variant-numeric:tabular-nums}
+.lv-clock{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:.9rem;color:var(--muted);border-top:1px solid var(--line);padding-top:8px}
+.lv-clock b{color:var(--ink);font-variant-numeric:tabular-nums}
+.lv-btns{display:flex;gap:6px}
+.lv-btns .btn-ghost{padding:5px 10px;font-size:.8rem}
 .notice{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border-radius:16px;padding:14px 18px;background:var(--gold);color:#14171c;animation:noticeIn .5s cubic-bezier(.2,.8,.2,1)}
 .notice b{font-family:var(--f-display);font-weight:400;font-size:clamp(1.4rem,2.4vw,2rem);text-transform:uppercase;display:block;line-height:1.1}
 .notice span{font-size:clamp(1rem,1.3vw,1.25rem);font-weight:500}
@@ -317,7 +322,7 @@ body.in-game .status{font-size:clamp(1.05rem,1.2vw,1.4rem)}
         </div>
         <div class="field">
           <label for="perLevel">Blinds steigen</label>
-          <select id="perLevel"><option value="3">alle 3 Runden</option><option value="1">jede Runde (Test)</option></select>
+          <select id="perLevel"><option value="t">alle 30 Min. (Uhr)</option><option value="3">alle 3 Runden</option><option value="1">jede Runde (Test)</option></select>
         </div>
       </div>
 
@@ -334,7 +339,7 @@ body.in-game .status{font-size:clamp(1.05rem,1.2vw,1.4rem)}
       <details class="lvl-preview">
         <summary id="lvlSummary">Blindstruktur</summary>
         <table class="lvl-table">
-          <thead><tr><th>Stufe</th><th>Runden</th><th>SB / BB</th><th>Ante</th></tr></thead>
+          <thead><tr><th>Stufe</th><th id="lvlColHead">Runden</th><th>SB / BB</th><th>Ante</th></tr></thead>
           <tbody id="lvlBody"></tbody>
         </table>
         <p class="hint" id="lvlHint"></p>
@@ -640,7 +645,9 @@ const LEVELS = [
   {sb:5,bb:10,ante:0},{sb:10,bb:20,ante:0},{sb:20,bb:40,ante:0},{sb:25,bb:50,ante:5},
   {sb:50,bb:100,ante:10},{sb:100,bb:200,ante:25},{sb:200,bb:400,ante:50},{sb:300,bb:600,ante:75}
 ];
-function PER(){ return (typeof S!=="undefined" && S.perLevel===1) ? 1 : 3; }
+function PACE(){ return (S && S.pace) || "t"; }                 // "t" = Uhr, "3" = alle 3 Runden, "1" = Test
+function PER(){ return PACE()==="1" ? 1 : 3; }
+const LEVEL_MIN = 30, LEVEL_MS = LEVEL_MIN*60000, PAUSE_LEVEL = 4;
 function PAUSE(){ return 4*PER(); }
 function FINAL(){ return LEVELS.length*PER(); }
 const CHIPS = [
@@ -674,6 +681,7 @@ try{
 }catch(e){}
 if(!SETS[S.set]) S.set="test";
 if(!(S.round>=0)) S.round=0;
+if(!S.pace) S.pace = S.perLevel===1 ? "1" : "t";
 function applySet(){ QUESTIONS=SETS[S.set].q; TOTAL=QUESTIONS.length; if(!(S.idx>=0 && S.idx<TOTAL)) S.idx=0; }
 applySet();
 if(!Array.isArray(S.out)) S.out=[];
@@ -700,7 +708,7 @@ function renderSetup(focusIdx){
   $("addBtn").disabled = draft.length>=MAX_P;
   refreshSb();
   $("qSet").value = S.set;
-  $("perLevel").value = String(S.perLevel===1?1:3); renderLvlTable();
+  $("perLevel").value = PACE(); renderLvlTable();
   if(focusIdx!=null){ const f=$("p-"+focusIdx); f && f.focus(); }
 }
 function iconBtn(label, path, fn){
@@ -728,27 +736,31 @@ $("setupForm").addEventListener("submit",e=>{
   S.players = names;
   S.sbStart = +$("sbStart").value || 0;
   S.set = $("qSet").value; applySet();
-  S.perLevel = +$("perLevel").value===1 ? 1 : 3;
+  S.pace = $("perLevel").value;
   if(changed || !S.started) resetGame();
   S.sbPos = S.sbStart; if(S.out.includes(S.sbPos)) S.sbPos = nextActive(S.sbPos-1);
   S.started = true; save();
   showGame();
 });
 
-function resetGame(){ S.rot=0; S.round=0; S.out=[]; S.done=[]; S.idx=0; S.sbPos=S.sbStart; $("notice").hidden=true; }
+function resetGame(){ S.rot=0; S.round=0; S.out=[]; S.done=[]; S.idx=0; S.sbPos=S.sbStart; S.clock=null; S.handLevel=0; S.pauseDone=false; S.finalDone=false; S.lastAnnounced=0; $("notice").hidden=true; }
 $("resetBtn").onclick=()=>{
-  S.sbStart = +$("sbStart").value || 0; S.set=$("qSet").value; applySet(); S.perLevel = +$("perLevel").value===1 ? 1 : 3; resetGame(); S.started=false; save();
+  S.sbStart = +$("sbStart").value || 0; S.set=$("qSet").value; applySet(); S.pace = $("perLevel").value; resetGame(); S.started=false; save();
   $("startBtn").textContent="Spiel starten"; $("resetBtn").hidden=true;
   $("setupHint").classList.remove("err"); $("setupHint").textContent="Alles zurückgesetzt: Runde 1, alle wieder im Spiel.";
 };
+function hm(min){ return Math.floor(min/60)+":"+String(min%60).padStart(2,"0"); }
 function renderLvlTable(){
-  const per = +$("perLevel").value===1 ? 1 : 3;
+  const pace = $("perLevel").value, per = pace==="1" ? 1 : 3;
   const tb=$("lvlBody"); tb.innerHTML="";
   LEVELS.forEach((L,i)=>{ const tr=document.createElement("tr");
-    const runs = per===1 ? `${i+1}` : `${i*per+1}–${(i+1)*per}`;
+    const runs = pace==="t" ? `${hm(i*LEVEL_MIN)}–${hm((i+1)*LEVEL_MIN)}` : per===1 ? `${i+1}` : `${i*per+1}–${(i+1)*per}`;
     tr.innerHTML=`<td>${i+1}</td><td>${runs}</td><td>${fmt(L.sb)} / ${fmt(L.bb)}</td><td>${L.ante?fmt(L.ante):"–"}</td>`; tb.appendChild(tr); });
-  $("lvlSummary").textContent = per===1 ? "Blindstruktur: steigt jede Runde (Test)" : "Blindstruktur: steigt alle 3 Runden";
-  $("lvlHint").textContent = `Pause nach Runde ${4*per}. Nach Runde ${LEVELS.length*per} Finale: alle All-in.`;
+  $("lvlColHead").textContent = pace==="t" ? "Spielzeit" : "Runden";
+  $("lvlSummary").textContent = pace==="t" ? "Blindstruktur: steigt alle 30 Minuten" : per===1 ? "Blindstruktur: steigt jede Runde (Test)" : "Blindstruktur: steigt alle 3 Runden";
+  $("lvlHint").textContent = pace==="t"
+    ? `8 Stufen à ${LEVEL_MIN} Minuten = 4 Stunden Spielzeit. Nach 2 Stunden Pause, dann hält die Uhr an. Eine neue Stufe gilt immer ab der nächsten Frage. Nach 4 Stunden: Finale, alle All-in.`
+    : `Pause nach Runde ${4*per}. Nach Runde ${LEVELS.length*per} Finale: alle All-in.`;
 }
 function renderChips(){
   const n = draft.length, body=$("chipBody"); body.innerHTML="";
@@ -926,18 +938,67 @@ function showSetup(){
 function showGame(){
   document.body.classList.add("in-game");
   $("setupView").hidden=true; $("gameView").hidden=false; $("gameTools").hidden=false;
+  if(PACE()==="t" && !S.clock){ S.clock={start:Date.now(), pausedTotal:0, paused:false, pausedAt:0}; S.handLevel=0; S.lastAnnounced=0; }
   load(S.idx, false);
   window.scrollTo(0,0);
 }
 $("playersBtn").onclick=showSetup;
 
 /* ---------- Blindstufen ---------- */
-function levelIdx(r){ r = r==null ? S.round : r; return Math.min(Math.floor(r/PER()), LEVELS.length-1); }
+function levelIdx(r){
+  if(PACE()==="t") return Math.min(S.handLevel||0, LEVELS.length-1);
+  r = r==null ? S.round : r; return Math.min(Math.floor(r/PER()), LEVELS.length-1);
+}
+function clockMs(){ const c=S.clock; if(!c) return 0; const end = c.paused ? c.pausedAt : Date.now(); return Math.max(0, end - c.start - c.pausedTotal); }
+function timeLevel(){ return Math.min(Math.floor(clockMs()/LEVEL_MS), LEVELS.length-1); }
+function hms(ms){ const t=Math.floor(ms/1000), h=Math.floor(t/3600), m=Math.floor(t%3600/60), x=t%60; return h+":"+String(m).padStart(2,"0")+":"+String(x).padStart(2,"0"); }
+function toggleClock(){ const c=S.clock; if(!c) return; if(c.paused){ c.pausedTotal += Date.now()-c.pausedAt; c.paused=false; } else { c.paused=true; c.pausedAt=Date.now(); } save(); renderLevel(); }
+function lvTextFor(i){ const L=LEVELS[i]; return `Stufe ${i+1}: Small Blind ${fmt(L.sb)}, Big Blind ${fmt(L.bb)}`+(L.ante?`, Ante ${fmt(L.ante)} von jedem`:"")+"."; }
+function clockTick(){
+  if(PACE()!=="t" || !S.clock || $("gameView").hidden) return;
+  const c=S.clock, el=clockMs(), tl=timeLevel();
+  if(!c.paused){
+    if(el >= PAUSE_LEVEL*LEVEL_MS && !S.pauseDone){
+      S.pauseDone=true; S.lastAnnounced=Math.max(S.lastAnnounced||0, tl);
+      c.paused=true; c.pausedAt=Date.now();
+      showNotice("pause","Pause!",`2 Stunden sind rum, die Uhr ist angehalten. Getränke holen, Chips sortieren. Mit „Uhr weiter“ geht es weiter. Ab der nächsten Frage gilt ${lvTextFor(tl)}`);
+      save();
+    } else if(el >= LEVELS.length*LEVEL_MS && !S.finalDone){
+      S.finalDone=true; save();
+      showNotice("final","Finale!","4 Stunden sind gespielt. Nach dieser Frage gehen alle, die noch Chips haben, All-in. Eine letzte Frage entscheidet.");
+    } else if(tl > (S.lastAnnounced||0)){
+      S.lastAnnounced=tl; save();
+      showNotice("up","Die Blinds steigen!",`Ab der nächsten Frage gilt ${lvTextFor(tl)}`);
+    }
+  }
+  renderLevel();
+}
+setInterval(clockTick, 1000);
+$("levelBox").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  if(b.dataset.act==="clock") toggleClock();
+  if(b.dataset.act==="ff" && S.clock){ S.clock.start -= 10*60000; save(); clockTick(); }
+});
 function lvl(r){ return LEVELS[levelIdx(r)]; }
 function fmt(n){ return n.toLocaleString("de-DE"); }
 function renderLevel(){
   const L=lvl(), li=levelIdx(), r=S.round+1;
   let next;
+  if(PACE()==="t"){
+    const el=clockMs(), tl=timeLevel(), paused=S.clock&&S.clock.paused;
+    if(el >= LEVELS.length*LEVEL_MS) next="4 Stunden gespielt: Finale, alle All-in.";
+    else if(tl>li) next=`Ab der nächsten Frage: Stufe ${tl+1} (${fmt(LEVELS[tl].sb)} / ${fmt(LEVELS[tl].bb)})`;
+    else if(li<LEVELS.length-1) next=`Stufe ${li+2} in <b>${hms((li+1)*LEVEL_MS-el)}</b>: ${fmt(LEVELS[li+1].sb)} / ${fmt(LEVELS[li+1].bb)}`+(LEVELS[li+1].ante?`, Ante ${LEVELS[li+1].ante}`:"");
+    else next=`Finale in <b>${hms(LEVELS.length*LEVEL_MS-el)}</b>`;
+    if(!S.pauseDone && tl===PAUSE_LEVEL-1) next += ` · Pause in ${hms(PAUSE_LEVEL*LEVEL_MS-el)}`;
+    $("levelBox").innerHTML = `<div class="lv-top"><span class="lv-badge">Stufe ${li+1}<small>/${LEVELS.length}</small></span>
+      <span class="lv-vals"><b>${fmt(L.sb)} / ${fmt(L.bb)}</b><small>Small / Big Blind</small></span>
+      <span class="lv-vals"><b>${L.ante?fmt(L.ante):"–"}</b><small>Ante</small></span></div>
+      <div class="lv-next">${next}</div>
+      <div class="lv-clock"><span>Spielzeit <b>${hms(el)}</b> / 4:00:00${paused?" · angehalten":""}</span>
+      <span class="lv-btns"><button class="btn-ghost" data-act="clock">${paused?"Uhr weiter":"Uhr anhalten"}</button><button class="btn-ghost" data-act="ff" title="Zum Testen 10 Minuten vorspulen">+10 Min</button></span></div>`;
+    return;
+  }
   if(S.round>=FINAL()) next="Finale: alle All-in, eine letzte Schätzfrage.";
   else if(li<LEVELS.length-1) next=`Nächste Stufe ab Runde ${(li+1)*PER()+1}: ${fmt(LEVELS[li+1].sb)} / ${fmt(LEVELS[li+1].bb)}`+(LEVELS[li+1].ante?`, Ante ${LEVELS[li+1].ante}`:"");
   else next=`Letzte Stufe. Nach Runde ${FINAL()} kommt das Finale.`;
@@ -1049,9 +1110,17 @@ function buildPicker(){
 }
 function goTo(i){
   const rotate = phase===3 && i!==S.idx;   // eine Aufgabe ist abgeschlossen → Blinds wandern
-  if(rotate){ S.round++; moveBlinds(1); }
+  let lvUp=false;
+  if(rotate){
+    S.round++;
+    if(PACE()==="t"){ const tl=timeLevel(); lvUp = tl > (S.handLevel||0); S.handLevel = tl; }
+    moveBlinds(1);
+  }
   load(i, rotate);
-  if(rotate) announce();
+  if(rotate){
+    if(PACE()!=="t") announce();
+    else if(lvUp && !(S.clock && S.clock.paused)) showNotice("up","Neue Stufe gilt jetzt!",lvTextFor(S.handLevel));
+  }
 }
 function load(i, animate){
   S.idx=i; phase=0;
