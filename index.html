@@ -84,7 +84,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,.back:focus-visibl
 .icon-btn:hover{color:var(--ink);border-color:var(--muted)}
 .icon-btn:disabled{opacity:.3;cursor:default}
 .add{align-self:flex-start}
-.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
 .field{display:flex;flex-direction:column;gap:6px;min-width:0}
 .field label{font-family:var(--f-label);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:.85rem;color:var(--muted)}
 .field input,.field select{font:inherit;color:var(--ink);background:var(--stage);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0}
@@ -199,6 +199,9 @@ kbd{font-family:var(--f-label);border:1px solid var(--line);border-bottom-width:
 .lvl-table th{font-family:var(--f-label);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.8rem;color:var(--muted);text-align:left;padding:4px 6px;border-bottom:1px solid var(--line)}
 .lvl-table td{padding:5px 6px;border-bottom:1px solid var(--line)}
 .lvl-preview .hint{margin:8px 0 0;font-size:.88rem}
+.chip-dot{display:inline-block;width:16px;height:16px;border-radius:50%;vertical-align:-3px;margin-right:8px;box-shadow:0 0 0 2px rgba(255,255,255,.25) inset}
+.chip-table td.neg{color:#f08a7e;font-weight:700}
+.chip-table tfoot td{font-weight:700;border-bottom:none}
 .blind-ctrl{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .blind-ctrl .hint{font-size:.88rem}
 .roster-box{background:var(--stage-2);border:1px solid var(--line);border-radius:14px;padding:10px 14px}
@@ -310,23 +313,37 @@ body.in-game .status{font-size:clamp(1.05rem,1.2vw,1.4rem)}
         </div>
         <div class="field">
           <label for="qSet">Fragen</label>
-          <select id="qSet"><option value="test">Testrunde 1 (10 Fragen)</option><option value="test2">Testrunde 2 (10 Fragen)</option><option value="test3">Testrunde 3 (10 Fragen)</option><option value="abend">Spieleabend (12 Fragen)</option></select>
+          <select id="qSet"><option value="test">Testrunde 1</option><option value="test2">Testrunde 2</option><option value="test3">Testrunde 3</option><option value="abend">Spieleabend</option></select>
+        </div>
+        <div class="field">
+          <label for="perLevel">Blinds steigen</label>
+          <select id="perLevel"><option value="3">alle 3 Runden</option><option value="1">jede Runde (Test)</option></select>
         </div>
       </div>
 
+      <details class="lvl-preview" open>
+        <summary>Chips &amp; Bank</summary>
+        <table class="lvl-table chip-table">
+          <thead><tr><th>Chip</th><th>Wert</th><th>Pro Spieler</th><th>Am Tisch</th><th>Bank</th></tr></thead>
+          <tbody id="chipBody"></tbody>
+          <tfoot id="chipFoot"></tfoot>
+        </table>
+        <p class="hint" id="chipHint"></p>
+      </details>
+
       <details class="lvl-preview">
-        <summary>Blindstruktur: steigt alle 3 Runden</summary>
+        <summary id="lvlSummary">Blindstruktur</summary>
         <table class="lvl-table">
           <thead><tr><th>Stufe</th><th>Runden</th><th>SB / BB</th><th>Ante</th></tr></thead>
           <tbody id="lvlBody"></tbody>
         </table>
-        <p class="hint">Pause nach Runde 12 (Rebuy-Ende, 1er tauschen). Nach Runde 24 Finale: alle All-in.</p>
+        <p class="hint" id="lvlHint"></p>
       </details>
 
       <div class="setup-foot">
         <button type="submit" class="btn-main" id="startBtn">Spiel starten</button>
         <button type="button" class="btn-ghost" id="resetBtn" hidden>Neues Spiel</button>
-        <span class="hint" id="setupHint">Mindestens 2 Spieler. Startstack 280.</span>
+        <span class="hint" id="setupHint">Mindestens 2 Spieler. Startstack 1.000.</span>
       </div>
     </form>
   </section>
@@ -344,6 +361,7 @@ body.in-game .status{font-size:clamp(1.05rem,1.2vw,1.4rem)}
       <section class="rules" id="rules" hidden>
         <h2>So läuft eine Runde</h2>
         <ol>
+          <li>Jeder startet mit 1.000: Weiß 5, Grün 10, Rot 25, Blau 50, Schwarz 100.</li>
           <li>Ab Stufe 4 zahlt jeder das Ante, dann zahlen Small und Big Blind ihren Pflichteinsatz in den Pot.</li>
           <li>Frage vorlesen. Jeder schreibt verdeckt eine Zahl auf seine Karte.</li>
           <li><strong>Setzrunde 1</strong> nach Poker-Prinzip: mitgehen, erhöhen oder aussteigen.</li>
@@ -619,10 +637,21 @@ const SETS = {
   abend:{ name:"Spieleabend (12 Fragen)", q:SET_ABEND }
 };
 const LEVELS = [
-  {sb:1,bb:2,ante:0},{sb:2,bb:4,ante:0},{sb:5,bb:10,ante:0},{sb:10,bb:20,ante:1},
-  {sb:15,bb:30,ante:5},{sb:25,bb:50,ante:5},{sb:50,bb:100,ante:10},{sb:100,bb:200,ante:25}
+  {sb:5,bb:10,ante:0},{sb:10,bb:20,ante:0},{sb:20,bb:40,ante:0},{sb:25,bb:50,ante:5},
+  {sb:50,bb:100,ante:10},{sb:100,bb:200,ante:25},{sb:200,bb:400,ante:50},{sb:300,bb:600,ante:75}
 ];
-const PER_LEVEL = 3, PAUSE_AFTER = 12, FINAL_AFTER = 24;
+function PER(){ return (typeof S!=="undefined" && S.perLevel===1) ? 1 : 3; }
+function PAUSE(){ return 4*PER(); }
+function FINAL(){ return LEVELS.length*PER(); }
+const CHIPS = [
+  {name:"Weiß",   v:5,   n:100, p:8, col:"#f4f1e8", ink:"#14171c"},
+  {name:"Grün",   v:10,  n:100, p:6, col:"#1f9d55", ink:"#fff"},
+  {name:"Rot",    v:25,  n:100, p:8, col:"#c8342a", ink:"#fff"},
+  {name:"Blau",   v:50,  n:100, p:6, col:"#2f6fd0", ink:"#fff"},
+  {name:"Schwarz",v:100, n:100, p:4, col:"#14171c", ink:"#fff"}
+];
+const STACK = CHIPS.reduce((a,c)=>a+c.v*c.p,0);           // 1.000
+const COMEBACK = [{i:4,k:3},{i:3,k:4}];                    // 3× Schwarz + 4× Blau = 500
 let QUESTIONS = SET_TEST, TOTAL = SET_TEST.length;
 
 const $ = id => document.getElementById(id);
@@ -671,6 +700,7 @@ function renderSetup(focusIdx){
   $("addBtn").disabled = draft.length>=MAX_P;
   refreshSb();
   $("qSet").value = S.set;
+  $("perLevel").value = String(S.perLevel===1?1:3); renderLvlTable();
   if(focusIdx!=null){ const f=$("p-"+focusIdx); f && f.focus(); }
 }
 function iconBtn(label, path, fn){
@@ -685,6 +715,7 @@ function refreshSb(){
   draft.forEach((n,i)=>{ const o=document.createElement("option"); o.value=i; o.textContent=(n.trim()||("Spieler "+(i+1))); sel.appendChild(o); });
   sel.value = String(Math.min(prev, draft.length-1));
   const c = draft.length; $("pCount").textContent = c+(c===1?" Spieler":" Spieler");
+  renderChips();
 }
 $("addBtn").onclick=()=>{ if(draft.length<MAX_P){ draft.push(""); renderSetup(draft.length-1); } };
 $("setupForm").addEventListener("submit",e=>{
@@ -692,11 +723,12 @@ $("setupForm").addEventListener("submit",e=>{
   const names = draft.map((n,i)=>n.trim()||("Spieler "+(i+1)));
   const filled = draft.filter(n=>n.trim()).length;
   if(filled<MIN_P){ $("setupHint").textContent="Bitte mindestens zwei Namen eintragen."; $("setupHint").classList.add("err"); return; }
-  $("setupHint").classList.remove("err"); $("setupHint").textContent="Mindestens 2 Spieler. Startstack 280.";
+  $("setupHint").classList.remove("err"); $("setupHint").textContent="Mindestens 2 Spieler. Startstack 1.000.";
   const changed = JSON.stringify(names)!==JSON.stringify(S.players) || $("qSet").value!==S.set;
   S.players = names;
   S.sbStart = +$("sbStart").value || 0;
   S.set = $("qSet").value; applySet();
+  S.perLevel = +$("perLevel").value===1 ? 1 : 3;
   if(changed || !S.started) resetGame();
   S.sbPos = S.sbStart; if(S.out.includes(S.sbPos)) S.sbPos = nextActive(S.sbPos-1);
   S.started = true; save();
@@ -705,12 +737,37 @@ $("setupForm").addEventListener("submit",e=>{
 
 function resetGame(){ S.rot=0; S.round=0; S.out=[]; S.done=[]; S.idx=0; S.sbPos=S.sbStart; $("notice").hidden=true; }
 $("resetBtn").onclick=()=>{
-  S.sbStart = +$("sbStart").value || 0; S.set=$("qSet").value; applySet(); resetGame(); S.started=false; save();
+  S.sbStart = +$("sbStart").value || 0; S.set=$("qSet").value; applySet(); S.perLevel = +$("perLevel").value===1 ? 1 : 3; resetGame(); S.started=false; save();
   $("startBtn").textContent="Spiel starten"; $("resetBtn").hidden=true;
   $("setupHint").classList.remove("err"); $("setupHint").textContent="Alles zurückgesetzt: Runde 1, alle wieder im Spiel.";
 };
-(function(){ const tb=$("lvlBody"); LEVELS.forEach((L,i)=>{ const tr=document.createElement("tr");
-  tr.innerHTML=`<td>${i+1}</td><td>${i*PER_LEVEL+1}–${(i+1)*PER_LEVEL}</td><td>${fmt(L.sb)} / ${fmt(L.bb)}</td><td>${L.ante?fmt(L.ante):"–"}</td>`; tb.appendChild(tr); }); })();
+function renderLvlTable(){
+  const per = +$("perLevel").value===1 ? 1 : 3;
+  const tb=$("lvlBody"); tb.innerHTML="";
+  LEVELS.forEach((L,i)=>{ const tr=document.createElement("tr");
+    const runs = per===1 ? `${i+1}` : `${i*per+1}–${(i+1)*per}`;
+    tr.innerHTML=`<td>${i+1}</td><td>${runs}</td><td>${fmt(L.sb)} / ${fmt(L.bb)}</td><td>${L.ante?fmt(L.ante):"–"}</td>`; tb.appendChild(tr); });
+  $("lvlSummary").textContent = per===1 ? "Blindstruktur: steigt jede Runde (Test)" : "Blindstruktur: steigt alle 3 Runden";
+  $("lvlHint").textContent = `Pause nach Runde ${4*per}. Nach Runde ${LEVELS.length*per} Finale: alle All-in.`;
+}
+function renderChips(){
+  const n = draft.length, body=$("chipBody"); body.innerHTML="";
+  let bankVal=0, short=false;
+  const bank = CHIPS.map(c=>c.n - c.p*n);
+  CHIPS.forEach((c,i)=>{
+    const b=bank[i]; if(b<0) short=true; bankVal += Math.max(0,b)*c.v;
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><span class="chip-dot" style="background:${c.col}"></span>${c.name}</td><td>${fmt(c.v)}</td><td>${c.p} × = ${fmt(c.p*c.v)}</td><td>${fmt(c.p*n)}</td><td class="${b<0?"neg":""}">${b}</td>`;
+    body.appendChild(tr);
+  });
+  const chipsPer = CHIPS.reduce((a,c)=>a+c.p,0);
+  $("chipFoot").innerHTML=`<tr><td colspan="2">Startstack</td><td>${chipsPer} Chips = ${fmt(STACK)}</td><td>${fmt(STACK*n)}</td><td>${fmt(bankVal)}</td></tr>`;
+  const comebacks = Math.max(0, Math.min(...COMEBACK.map(x=>Math.floor(bank[x.i]/x.k))));
+  $("chipHint").textContent = short
+    ? `Für ${n} Spieler reichen die Chips nicht. Rot markierte Farben fehlen in der Bank.`
+    : `Bank für Wechsel und Comebacks. Comeback aus der Geisterliga: 500 (3× Schwarz + 4× Blau) – reicht für ${comebacks} Comebacks.`;
+}
+$("perLevel").onchange=renderLvlTable;
 
 /* ---------- Glücksrad ---------- */
 const WHEEL_COLORS = [["#c8342a","#fff"],["#14171c","#fff"],["#1f7a4d","#fff"],["#2f6fd0","#fff"],["#c49a3f","#14171c"]];
@@ -875,16 +932,16 @@ function showGame(){
 $("playersBtn").onclick=showSetup;
 
 /* ---------- Blindstufen ---------- */
-function levelIdx(r){ r = r==null ? S.round : r; return Math.min(Math.floor(r/PER_LEVEL), LEVELS.length-1); }
+function levelIdx(r){ r = r==null ? S.round : r; return Math.min(Math.floor(r/PER()), LEVELS.length-1); }
 function lvl(r){ return LEVELS[levelIdx(r)]; }
 function fmt(n){ return n.toLocaleString("de-DE"); }
 function renderLevel(){
   const L=lvl(), li=levelIdx(), r=S.round+1;
   let next;
-  if(S.round>=FINAL_AFTER) next="Finale: alle All-in, eine letzte Schätzfrage.";
-  else if(li<LEVELS.length-1) next=`Nächste Stufe ab Runde ${(li+1)*PER_LEVEL+1}: ${fmt(LEVELS[li+1].sb)} / ${fmt(LEVELS[li+1].bb)}`+(LEVELS[li+1].ante?`, Ante ${LEVELS[li+1].ante}`:"");
-  else next=`Letzte Stufe. Nach Runde ${FINAL_AFTER} kommt das Finale.`;
-  if(S.round<PAUSE_AFTER && r>PAUSE_AFTER-PER_LEVEL) next += ` · Pause nach Runde ${PAUSE_AFTER}`;
+  if(S.round>=FINAL()) next="Finale: alle All-in, eine letzte Schätzfrage.";
+  else if(li<LEVELS.length-1) next=`Nächste Stufe ab Runde ${(li+1)*PER()+1}: ${fmt(LEVELS[li+1].sb)} / ${fmt(LEVELS[li+1].bb)}`+(LEVELS[li+1].ante?`, Ante ${LEVELS[li+1].ante}`:"");
+  else next=`Letzte Stufe. Nach Runde ${FINAL()} kommt das Finale.`;
+  if(S.round<PAUSE() && r>PAUSE()-PER()) next += ` · Pause nach Runde ${PAUSE()}`;
   $("levelBox").innerHTML = `<div class="lv-top"><span class="lv-badge">Stufe ${li+1}<small>/${LEVELS.length}</small></span>
     <span class="lv-vals"><b>${fmt(L.sb)} / ${fmt(L.bb)}</b><small>Small / Big Blind</small></span>
     <span class="lv-vals"><b>${L.ante?fmt(L.ante):"–"}</b><small>Ante</small></span></div>
@@ -899,9 +956,9 @@ function announce(){
   const r=S.round;   // abgeschlossene Runden
   const L=lvl(r);
   const lvTxt=`Stufe ${levelIdx(r)+1}: Small Blind ${fmt(L.sb)}, Big Blind ${fmt(L.bb)}`+(L.ante?`, Ante ${fmt(L.ante)} von jedem`:"")+".";
-  if(r===FINAL_AFTER) showNotice("final","Finale!","Alle, die noch Chips haben, gehen All-in. Eine letzte Frage entscheidet.");
-  else if(r===PAUSE_AFTER) showNotice("pause","Pause!",`Rebuys sind jetzt vorbei. 1er gegen größere Chips tauschen. Danach geht es weiter mit ${lvTxt}`);
-  else if(r>0 && r%PER_LEVEL===0 && r<FINAL_AFTER) showNotice("up","Die Blinds steigen!",lvTxt);
+  if(r===FINAL()) showNotice("final","Finale!","Alle, die noch Chips haben, gehen All-in. Eine letzte Frage entscheidet.");
+  else if(r===PAUSE()) showNotice("pause","Pause!",`Getränke holen, Chips nach Farben sortieren. Danach geht es weiter mit ${lvTxt}`);
+  else if(r>0 && r%PER()===0 && r<FINAL()) showNotice("up","Die Blinds steigen!",lvTxt);
   else $("notice").hidden=true;
 }
 
