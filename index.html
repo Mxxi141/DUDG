@@ -315,7 +315,7 @@ body.in-game .status{font-size:clamp(1.05rem,1.2vw,1.4rem)}
         </div>
         <div class="field">
           <label for="qSet">Fragen</label>
-          <select id="qSet"><option value="test">Testrunde 1</option><option value="test2">Testrunde 2</option><option value="test3">Testrunde 3</option><option value="abend">Spieleabend (25 Fragen)</option></select>
+          <select id="qSet"><option value="test">Testrunde 1</option><option value="test2">Testrunde 2</option><option value="test3">Testrunde 3</option><option value="test4">Testrunde 4</option><option value="abend">Spieleabend (25 Fragen)</option></select>
         </div>
         <div class="field">
           <label for="perLevel">Blinds steigen</label>
@@ -693,10 +693,53 @@ const SET_TEST3 = [
    h2:"Es war zwischen 1970 und 1978.",
    a:"1974", n:"Der Golf wurde zum meistverkauften Auto Deutschlands."}
 ];
+const SET_TEST4 = [
+  {cat:"Promis", q:"Wie alt wurde Apple-Gründer Steve Jobs?", unit:"Jahre",
+   h1:"Er starb im Jahr 2011.",
+   h2:"Er wurde älter als 50.",
+   a:"56 Jahre", n:"Geboren 1955 in San Francisco."},
+  {cat:"Kino", q:"In welchem Jahr kam der erste „Star Wars“-Film ins Kino?", unit:"Jahreszahl",
+   h1:"Es war in den 1970er-Jahren.",
+   h2:"Im selben Jahr starb Elvis Presley.",
+   a:"1977", n:"Heute heißt er „Episode IV – Eine neue Hoffnung“."},
+  {cat:"Bayern", q:"Wie hoch ist der Watzmann?", unit:"Meter über dem Meer",
+   h1:"Er thront im Berchtesgadener Land über dem Königssee.",
+   h2:"Es sind zwischen 2.700 und 2.800 m.",
+   a:"2.713 m", n:"Gemeint ist die Mittelspitze, der höchste Gipfel des Watzmann-Massivs."},
+  {cat:"Sport", q:"Wie viele Grand-Slam-Titel gewann Steffi Graf im Einzel?", unit:"Titel",
+   h1:"1988 gewann sie alle vier Turniere und dazu Olympia-Gold.",
+   h2:"Es sind mehr als 20.",
+   a:"22 Titel", n:"Darunter siebenmal Wimbledon."},
+  {cat:"Geografie", q:"Wie lang ist die Themse?", unit:"Kilometer",
+   h1:"Sie fließt mitten durch London.",
+   h2:"Sie ist kürzer als 400 km.",
+   a:"rund 346 km", n:"Sie ist der längste Fluss, der nur durch England fließt."},
+  {cat:"Technik", q:"In welchem Jahr wurde Facebook gegründet?", unit:"Jahreszahl",
+   h1:"Es startete als Netzwerk für Studenten der Harvard-Universität.",
+   h2:"Es war zwischen 2002 und 2006.",
+   a:"2004", n:"Gegründet von Mark Zuckerberg und Mitstudenten."},
+  {cat:"Kino", q:"Wie alt wurde Charlie Chaplin?", unit:"Jahre",
+   h1:"Er wurde 1889 in London geboren.",
+   h2:"Er wurde älter als 85.",
+   a:"88 Jahre", n:"Er starb am Weihnachtstag 1977 in der Schweiz."},
+  {cat:"Bauwerke", q:"Wie hoch ist die Christusstatue in Rio de Janeiro, ohne Sockel?", unit:"Meter",
+   h1:"Sie steht auf dem Berg Corcovado.",
+   h2:"Es sind zwischen 25 und 35 m.",
+   a:"30 m", n:"Mit Sockel sind es 38 m. Eingeweiht wurde sie 1931."},
+  {cat:"Musik", q:"In welchem Jahr gewann Deutschland zum ersten Mal den Eurovision Song Contest?", unit:"Jahreszahl",
+   h1:"Gewonnen hat Nicole mit „Ein bisschen Frieden“.",
+   h2:"Es war Anfang der 1980er-Jahre.",
+   a:"1982", n:"Den zweiten Sieg holte Lena 2010 mit „Satellite“."},
+  {cat:"Bauwerke", q:"Wie hoch ist der Uhrturm „Big Ben“ in London?", unit:"Meter",
+   h1:"Er steht am britischen Parlament an der Themse.",
+   h2:"Er ist niedriger als 100 m.",
+   a:"96 m", n:"Offiziell heißt der Turm seit 2012 „Elizabeth Tower“. Big Ben ist eigentlich die Glocke."}
+];
 const SETS = {
   test:{ name:"Testrunde 1 (10 Fragen)", q:SET_TEST },
   test2:{ name:"Testrunde 2 (10 Fragen)", q:SET_TEST2 },
   test3:{ name:"Testrunde 3 (10 Fragen)", q:SET_TEST3 },
+  test4:{ name:"Testrunde 4 (10 Fragen)", q:SET_TEST4 },
   abend:{ name:"Spieleabend (25 Fragen)", q:SET_ABEND }
 };
 const LEVELS = [
