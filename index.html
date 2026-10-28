@@ -343,7 +343,7 @@ body.in-game .status{font-size:clamp(1.05rem,1.2vw,1.4rem)}
       <div class="setup-foot">
         <button type="submit" class="btn-main" id="startBtn">Spiel starten</button>
         <button type="button" class="btn-ghost" id="resetBtn" hidden>Neues Spiel</button>
-        <span class="hint" id="setupHint">Mindestens 2 Spieler. Startstack 1.000.</span>
+        <span class="hint" id="setupHint">Mindestens 2 Spieler. Startstack 800.</span>
       </div>
     </form>
   </section>
@@ -361,7 +361,7 @@ body.in-game .status{font-size:clamp(1.05rem,1.2vw,1.4rem)}
       <section class="rules" id="rules" hidden>
         <h2>So läuft eine Runde</h2>
         <ol>
-          <li>Jeder startet mit 1.000: Weiß 5, Grün 10, Rot 25, Blau 50, Schwarz 100.</li>
+          <li>Jeder startet mit 800: Weiß 5, Grün 10, Rot 25, Blau 50, Schwarz 100.</li>
           <li>Ab Stufe 4 zahlt jeder das Ante, dann zahlen Small und Big Blind ihren Pflichteinsatz in den Pot.</li>
           <li>Frage vorlesen. Jeder schreibt verdeckt eine Zahl auf seine Karte.</li>
           <li><strong>Setzrunde 1</strong> nach Poker-Prinzip: mitgehen, erhöhen oder aussteigen.</li>
@@ -648,10 +648,10 @@ const CHIPS = [
   {name:"Grün",   v:10,  n:100, p:6, col:"#1f9d55", ink:"#fff"},
   {name:"Rot",    v:25,  n:100, p:8, col:"#c8342a", ink:"#fff"},
   {name:"Blau",   v:50,  n:100, p:6, col:"#2f6fd0", ink:"#fff"},
-  {name:"Schwarz",v:100, n:100, p:4, col:"#14171c", ink:"#fff"}
+  {name:"Schwarz",v:100, n:100, p:2, col:"#14171c", ink:"#fff"}
 ];
-const STACK = CHIPS.reduce((a,c)=>a+c.v*c.p,0);           // 1.000
-const COMEBACK = [{i:4,k:3},{i:3,k:4}];                    // 3× Schwarz + 4× Blau = 500
+const STACK = CHIPS.reduce((a,c)=>a+c.v*c.p,0);           // 800
+const COMEBACK = [{i:4,k:2},{i:3,k:4}];                    // 2× Schwarz + 4× Blau = 400
 let QUESTIONS = SET_TEST, TOTAL = SET_TEST.length;
 
 const $ = id => document.getElementById(id);
@@ -723,7 +723,7 @@ $("setupForm").addEventListener("submit",e=>{
   const names = draft.map((n,i)=>n.trim()||("Spieler "+(i+1)));
   const filled = draft.filter(n=>n.trim()).length;
   if(filled<MIN_P){ $("setupHint").textContent="Bitte mindestens zwei Namen eintragen."; $("setupHint").classList.add("err"); return; }
-  $("setupHint").classList.remove("err"); $("setupHint").textContent="Mindestens 2 Spieler. Startstack 1.000.";
+  $("setupHint").classList.remove("err"); $("setupHint").textContent="Mindestens 2 Spieler. Startstack 800.";
   const changed = JSON.stringify(names)!==JSON.stringify(S.players) || $("qSet").value!==S.set;
   S.players = names;
   S.sbStart = +$("sbStart").value || 0;
@@ -765,7 +765,7 @@ function renderChips(){
   const comebacks = Math.max(0, Math.min(...COMEBACK.map(x=>Math.floor(bank[x.i]/x.k))));
   $("chipHint").textContent = short
     ? `Für ${n} Spieler reichen die Chips nicht. Rot markierte Farben fehlen in der Bank.`
-    : `Bank für Wechsel und Comebacks. Comeback aus der Geisterliga: 500 (3× Schwarz + 4× Blau) – reicht für ${comebacks} Comebacks.`;
+    : `Bank für Wechsel und Comebacks. Comeback aus der Geisterliga: 400 (2× Schwarz + 4× Blau) – reicht für ${comebacks} Comebacks.`;
 }
 $("perLevel").onchange=renderLvlTable;
 
