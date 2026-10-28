@@ -830,7 +830,7 @@ $("setupForm").addEventListener("submit",e=>{
   const filled = draft.filter(n=>n.trim()).length;
   if(filled<MIN_P){ $("setupHint").textContent="Bitte mindestens zwei Namen eintragen."; $("setupHint").classList.add("err"); return; }
   $("setupHint").classList.remove("err"); $("setupHint").textContent="Mindestens 2 Spieler. Startstack 800.";
-  const changed = JSON.stringify(names)!==JSON.stringify(S.players) || $("qSet").value!==S.set;
+  const changed = JSON.stringify(names)!==JSON.stringify(S.players) || $("qSet").value!==S.set || (+$("perLevel").value===1?1:3)!==PER();
   S.players = names;
   S.sbStart = +$("sbStart").value || 0;
   S.set = $("qSet").value; applySet();
@@ -1188,7 +1188,10 @@ function advance(){
     phase++;
     if(phase===3 && !S.done.includes(S.idx)){ S.done.push(S.idx); buildPicker(); save(); }
     render();
-  } else goTo((S.idx+1)%TOTAL);
+  } else if(S.idx===TOTAL-1){
+    // Neustart: Rundenzähler, Blinds und Ante wieder auf Stufe 1
+    resetGame(); save(); renderTable(false); load(0, true);
+  } else goTo(S.idx+1);
 }
 function back(){ if(phase>0){ phase--; render(); } }
 
